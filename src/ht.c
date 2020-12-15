@@ -34,7 +34,7 @@ void hash_delete(struct my_struct * to_be_deleted) {
 }
 
 void handle_set(uint8_t * key, uint16_t key_length, uint8_t * value, uint32_t value_length, int fd) {
-    hash_add(key, key_length, value, value_length);
+    hash_add(key, key_length, value, value_length);     //TODO check first if entry already exists with that key
     uint8_t msg[7] = {0, 0, 0, 0, 0, 0, 0};
     msg[0] |= 1 << 1;
     msg[0] |= 1 << 3;
@@ -90,9 +90,9 @@ void handle_delete(uint8_t * key, uint16_t key_length, int fd) {
         msg[0] |= 1 << 3; // set ACK bit
     }
     if (send(fd, msg, 7, 0) == -1) {
-        perror("server: send() (non-)ACK DELETE failed");
+        perror("server: send() non-ACK/ACK DELETE failed");
     } else {
-        fprintf(stderr, "server: (non-)ACK DELETE successfully sent\n");
+        fprintf(stderr, "server: non-ACK/ACK DELETE successfully sent\n");
     }
 }
 
