@@ -34,7 +34,13 @@ void hash_delete(struct my_struct * to_be_deleted) {
 }
 
 void handle_set(uint8_t * key, uint16_t key_length, uint8_t * value, uint32_t value_length, int fd) {
-    hash_add(key, key_length, value, value_length);     //TODO check first if entry already exists with that key
+    struct my_struct * entry = NULL;
+    entry = hash_find(key, key_length);
+    if (entry) {
+        fprintf(stderr, "server: need to delete existing entry first\n");
+        hash_delete(entry);
+    }
+    hash_add(key, key_length, value, value_length);
     uint8_t msg[7] = {0, 0, 0, 0, 0, 0, 0};
     msg[0] |= 1 << 1;
     msg[0] |= 1 << 3;
