@@ -1,10 +1,14 @@
-#include "../lib/ht.h"
+#include "../lib/server_functions.h"
 
 
 void hash_add(uint8_t * key, uint16_t key_length, uint8_t * value, uint32_t value_length) {
     fprintf(stderr, "server: adding new entry to hash table...\n");
     struct my_struct * new_entry = NULL;
     new_entry = calloc(1, sizeof(*new_entry));
+    if (new_entry == NULL) {
+        fprintf(stderr, "server: failed to allocate memory\n");
+        exit(11);
+    }
     new_entry->key = key;
     new_entry->value = value;
     new_entry->value_length = value_length;
@@ -68,6 +72,10 @@ void handle_get(uint8_t * key, uint16_t key_length, int fd) {
     uint32_t value_length = entry->value_length;
     uint8_t * msg = NULL;
     msg = (uint8_t *) calloc(7 + key_length + value_length, 1);
+    if (msg == NULL) {
+        fprintf(stderr, "server: failed to allocate memory\n");
+        exit(12);
+    }
     msg[0] |= 1 << 2;   // set GET bit
     msg[0] |= 1 << 3;   // set ACK bit
     uint16_t key_length_network = htons(key_length);

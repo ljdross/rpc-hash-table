@@ -68,14 +68,22 @@ int main(int argc, char **argv) {
         uint8_t * value = NULL;
         while ((c = fgetc(stdin)) != EOF) {
             value_length++;
-            value = (uint8_t *) realloc(value, value_length);   //TODO check return value
+            value = (uint8_t *) realloc(value, value_length);
+            if (value == NULL) {
+                fprintf(stderr, "client: failed to allocate memory\n");
+                exit(2);
+            }
             *(value + value_length - 1) = (uint8_t) c;
 //            memcpy(value + value_length - 1, (uint8_t *) &c, 1);
         }
         uint32_t value_length_network = htonl(value_length);
         *(uint32_t *) (msg + 3) = value_length_network;
         size_t msg_complete_length = msg_length + value_length;
-        uint8_t * msg_complete = calloc(msg_complete_length, sizeof(uint8_t)); //TODO check return value
+        uint8_t * msg_complete = calloc(msg_complete_length, sizeof(uint8_t));
+        if (msg_complete == NULL) {
+            fprintf(stderr, "client: failed to allocate memory\n");
+            exit(3);
+        }
         memcpy(msg_complete, msg, msg_length);
         memcpy(msg_complete + msg_length, value, value_length);
         if (send(sockfd, msg_complete, msg_complete_length, 0) == -1){
@@ -96,7 +104,7 @@ int main(int argc, char **argv) {
         }
     } else {
         fprintf(stderr, "client: invalid operation\n");
-        exit(2);
+        exit(4);
     }
 
 
@@ -110,7 +118,7 @@ int main(int argc, char **argv) {
         if (bytes_received == -1) {
             perror("client: recv() failed in header");
             close(sockfd);
-            exit(3);
+            exit(5);
         }
         numbytes -= bytes_received;
     }
@@ -129,7 +137,7 @@ int main(int argc, char **argv) {
         }
         if (bytes_received == -1) {
             perror("client: recv() failed");
-            exit(4);
+            exit(6);
         }
         fwrite(buf, sizeof(u_int8_t), bytes_received, stderr);
         numbytes -= bytes_received;
@@ -145,7 +153,7 @@ int main(int argc, char **argv) {
         }
         if (bytes_received == -1) {
             perror("client: recv() failed");
-            exit(5);
+            exit(7);
         }
         fwrite(buf, sizeof(u_int8_t), bytes_received, stdout);
         numbytes -= bytes_received;

@@ -1,4 +1,4 @@
-#include "ht.h"
+#include "server_functions.h"
 
 
 int main(int argc, char **argv) {
@@ -111,11 +111,19 @@ int main(int argc, char **argv) {
             }
             bytes_total += bytes_received;
             dynamic_buffer = (uint8_t *) realloc(dynamic_buffer, bytes_total);
+            if (dynamic_buffer == NULL) {
+                fprintf(stderr, "server: failed to allocate memory\n");
+                exit(9);
+            }
             memcpy(dynamic_buffer + bytes_total - bytes_received, buf, bytes_received);
         }
         uint8_t * key = (uint8_t *) calloc(bytes_total - valuelen, sizeof(uint8_t));
-        memcpy(key, dynamic_buffer, bytes_total - valuelen);
         uint8_t * value = (uint8_t *) calloc(bytes_total - keylen, sizeof(uint8_t));
+        if (key == NULL || value == NULL) {
+            fprintf(stderr, "server: failed to allocate memory\n");
+            exit(10);
+        }
+        memcpy(key, dynamic_buffer, bytes_total - valuelen);
         memcpy(value, dynamic_buffer + keylen, bytes_total - keylen);
         free(dynamic_buffer);
 
