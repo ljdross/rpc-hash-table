@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv) {
     int sockfd;
-    u_int8_t buf[MAXDATASIZE];
+    uint8_t buf[MAXDATASIZE];
     struct addrinfo hints, *servinfo, *p;
     int rv;
 
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
             perror("client: recv() failed");
             exit(6);
         }
-        fwrite(buf, sizeof(u_int8_t), bytes_received, stderr);
+        fwrite(buf, sizeof(uint8_t), bytes_received, stderr);
         numbytes -= bytes_received;
     }
 
@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
             perror("client: recv() failed");
             exit(7);
         }
-        fwrite(buf, sizeof(u_int8_t), bytes_received, stdout);
+        fwrite(buf, sizeof(uint8_t), bytes_received, stdout);
         numbytes -= bytes_received;
     }
 
